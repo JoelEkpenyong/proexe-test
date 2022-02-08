@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -9,11 +9,12 @@ import {
   DropdownToggle,
   Table,
 } from "reactstrap";
-import { toggleModal } from "../../redux/slices/ui";
-import { deleteUser } from "../../services/user";
+import {toggleModal, toggleSort} from "../../redux/slices/ui";
+import { deleteUser, getUsers } from "../../services/user";
 import ConfirmModal from "../modals/ConfrimModal";
+import {sortArray} from "../../helpers/utils";
 
-const DropdownBtns = ({ onDelete, userId }) => {
+const ActionDropdown = ({ onDelete, userId }) => {
   const [actionsOpen, setActionOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -67,6 +68,46 @@ const DropdownBtns = ({ onDelete, userId }) => {
   );
 };
 
+const SorterDropdown = () => {
+  const [actionsOpen, setActionOpen] = useState(false);
+  const queryClient = useQueryClient()
+  const { data: users, refetch } = useQuery("allUsers", getUsers);
+  const dispatch = useDispatch()
+
+    const {
+        ui: { sort },
+    } = useSelector((state) => state);
+
+
+  const toggleDropdown = () => {
+    setActionOpen(!actionsOpen);
+  };
+
+  const sortData = (property, direction) => {
+      const sortedCopy = sortArray(users, property, direction)
+      queryClient.setQueryData('allUsers', sortedCopy)
+      dispatch(toggleSort({name: property, direction}))
+  }
+
+  const unSortData = (property) => {
+      refetch().then((res) => queryClient.setQueryData('allUsers', res?.data))
+      dispatch(toggleSort({name: property, direction: null}))
+  }
+
+  return (
+    <Dropdown toggle={toggleDropdown} isOpen={actionsOpen}>
+      <DropdownToggle className="text-dark bg-light border-0 p-0 m-o">
+        &#8595; &#8593;
+      </DropdownToggle>
+      <DropdownMenu>
+          <DropdownItem disabled={sort.username.order === null} onClick={() => unSortData('username')}>Un-sort</DropdownItem>
+        <DropdownItem disabled={sort.username.order === 'asc'} onClick={() => sortData('username', 'asc')}>sort by ASC</DropdownItem>
+        <DropdownItem disabled={sort.username.order === 'desc'} onClick={() => sortData('username', 'desc')}>sort by DESC</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+};
+
 const UserTable = ({ tableData }) => {
   const {
     ui: { modals },
@@ -94,7 +135,7 @@ const UserTable = ({ tableData }) => {
         <th>{data?.address?.city}</th>
         <th>{data?.email}</th>
         <th>
-          <DropdownBtns
+          <ActionDropdown
             userId={data.id}
             onDelete={() => mutateAsync(data.id)}
           />
@@ -110,7 +151,12 @@ const UserTable = ({ tableData }) => {
           <tr>
             <th>Id</th>
             <th>Name</th>
-            <th>Username</th>
+            <th>
+              <span className="d-inline-flex">
+                <span className="me-1">Username</span>
+                <SorterDropdown />
+              </span>
+            </th>
             <th>City</th>
             <th>Email</th>
             <th>Actions</th>
