@@ -25,7 +25,7 @@ const handleApiError = (err) => {
     console.log(
       "The error is as a result of the test api, as was requested, I deleted the resource on the client side"
     );
-    console.log(err.response);
+
     return handleApiSuccess({});
   }
 

@@ -10,7 +10,12 @@ export const deleteUser = async (id) => {
   return res;
 };
 
-export const createUser = async (data) => {
-  const res = await Api.post("/", data);
+export const createUser = async (payload) => {
+  const res = await Api.post("/", payload);
+  return res;
+};
+
+export const updateUser = async (id, payload) => {
+  const res = await Api.put(`/${id}`, payload);
   return res;
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   Dropdown,
   DropdownItem,
@@ -12,7 +13,7 @@ import { toggleModal } from "../../redux/slices/ui";
 import { deleteUser } from "../../services/user";
 import ConfirmModal from "../modals/ConfrimModal";
 
-const DropdownBtns = ({ onDelete }) => {
+const DropdownBtns = ({ onDelete, userId }) => {
   const [actionsOpen, setActionOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -45,12 +46,13 @@ const DropdownBtns = ({ onDelete }) => {
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem className="bg-transparent">
-          <span
+          <Link
+            to={`/user/${userId}/edit`}
             className="btn btn-small w-100 p-1 btn-secondary"
             style={{ fontSize: ".8rem" }}
           >
             Edit
-          </span>
+          </Link>
         </DropdownItem>
         <DropdownItem className="bg-transparent" onClick={openConfirmModal}>
           <span
@@ -92,7 +94,10 @@ const UserTable = ({ tableData }) => {
         <th>{data?.address?.city}</th>
         <th>{data?.email}</th>
         <th>
-          <DropdownBtns onDelete={() => mutateAsync(data.id)} />
+          <DropdownBtns
+            userId={data.id}
+            onDelete={() => mutateAsync(data.id)}
+          />
         </th>
       </tr>
     ));

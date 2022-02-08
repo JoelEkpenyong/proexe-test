@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -23,8 +22,8 @@ const UserForm = ({
   const formik = useFormik({
     initialValues: defaultValues,
     validationSchema: UserSchema,
+    enableReinitialize: true,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      console.log(values);
       handleSubmit(values).then(() => {
         setSubmitting(false);
         resetForm();

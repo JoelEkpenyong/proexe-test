@@ -10,6 +10,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      // cacheTime: 10000,
       staleTime: Infinity,
       retry(failureCount, error) {
         if (error.status === 404) return false;
