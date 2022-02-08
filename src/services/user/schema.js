@@ -1,5 +1,4 @@
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 const baseSchema = yup.object({
   name: yup.string().required("Name is required"),
@@ -9,7 +8,6 @@ const baseSchema = yup.object({
     .required("Valid email is required"),
   username: yup.string().required("Username is required"),
   address: yup.object({ city: yup.string().required("City is required") }),
-  //   city: yup.string().required("City is required"),
 });
 
 export const UserSchema = baseSchema;
