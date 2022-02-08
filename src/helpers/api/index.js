@@ -2,8 +2,7 @@ import _axios from "axios";
 import { wrapPromiseWithLoader } from "../utils";
 
 const axios = _axios.create({
-  baseURL:
-    "https://my-json-server.typicode.com/karolkproexe/jsonplaceholderdb/data",
+  baseURL: process.env.REACT_APP_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -21,11 +20,20 @@ const handleApiError = (err) => {
     return; // fail silently
   }
 
+  // if request fails due to the test nature of the API, ignore it and call the success handler
+  if (err.response.status === 404) {
+    console.log(
+      "The error is as a result of the test api, as was requested, I deleted the resource on the client side"
+    );
+    console.log(err.response);
+    return handleApiSuccess({});
+  }
+
   if (err.response) {
     const apiError = err.response.data;
     // client received an error response (5xx, 4xx)
     console.error(
-      `Backend returned code ${err.code}:${apiError.code}, ` +
+      `Backend returned code ${err.response.status}:${apiError.code}, ` +
         `body was: ${apiError.message}`,
       "data:",
       apiError.data
@@ -46,23 +54,23 @@ const handleApiError = (err) => {
 };
 
 export const Api = {
-  get: (endpoint: string, config) =>
+  get: (endpoint, config) =>
     axios.get(endpoint, config).then(handleApiSuccess).catch(handleApiError),
-  post: (endpoint: string, data: any, config) =>
+  post: (endpoint, data, config) =>
     wrapPromiseWithLoader(
       axios
         .post(endpoint, data, config)
         .then(handleApiSuccess)
         .catch(handleApiError)
     ),
-  put: (endpoint: string, data: any, config) =>
+  put: (endpoint, data, config) =>
     wrapPromiseWithLoader(
       axios
         .put(endpoint, data, config)
         .then(handleApiSuccess)
         .catch(handleApiError)
     ),
-  delete: (endpoint: string, config) =>
+  delete: (endpoint, config) =>
     wrapPromiseWithLoader(
       axios
         .delete(endpoint, config)

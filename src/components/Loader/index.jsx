@@ -1,8 +1,8 @@
 import { Spinner } from "reactstrap";
 
-export const Loader = ({ type = "border" }) => {
+export const Loader = ({ type = "border", color = "secondary", size }) => {
   return (
-    <Spinner color="secondary" type={type}>
+    <Spinner color={color} type={type} size={size}>
       Loading...
     </Spinner>
   );
