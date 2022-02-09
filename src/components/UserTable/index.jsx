@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -9,10 +9,10 @@ import {
   DropdownToggle,
   Table,
 } from "reactstrap";
-import {toggleModal, toggleSort} from "../../redux/slices/ui";
+import { toggleModal, toggleSort } from "../../redux/slices/ui";
 import { deleteUser, getUsers } from "../../services/user";
 import ConfirmModal from "../modals/ConfrimModal";
-import {sortArray} from "../../helpers/utils";
+import { sortArray } from "../../helpers/utils";
 
 const ActionDropdown = ({ onDelete, userId }) => {
   const [actionsOpen, setActionOpen] = useState(false);
@@ -70,29 +70,29 @@ const ActionDropdown = ({ onDelete, userId }) => {
 
 const SorterDropdown = () => {
   const [actionsOpen, setActionOpen] = useState(false);
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { data: users, refetch } = useQuery("allUsers", getUsers);
-  const dispatch = useDispatch()
+  // const users = queryClient.getQueryData("allUsers");
+  const dispatch = useDispatch();
 
-    const {
-        ui: { sort },
-    } = useSelector((state) => state);
-
+  const {
+    ui: { sort },
+  } = useSelector((state) => state);
 
   const toggleDropdown = () => {
     setActionOpen(!actionsOpen);
   };
 
   const sortData = (property, direction) => {
-      const sortedCopy = sortArray(users, property, direction)
-      queryClient.setQueryData('allUsers', sortedCopy)
-      dispatch(toggleSort({name: property, direction}))
-  }
+    const sortedCopy = sortArray(users, property, direction);
+    queryClient.setQueryData("allUsers", sortedCopy);
+    dispatch(toggleSort({ name: property, direction }));
+  };
 
   const unSortData = (property) => {
-      refetch().then((res) => queryClient.setQueryData('allUsers', res?.data))
-      dispatch(toggleSort({name: property, direction: null}))
-  }
+    refetch().then((res) => queryClient.setQueryData("allUsers", res?.data));
+    dispatch(toggleSort({ name: property, direction: null }));
+  };
 
   return (
     <Dropdown toggle={toggleDropdown} isOpen={actionsOpen}>
@@ -100,9 +100,24 @@ const SorterDropdown = () => {
         &#8595; &#8593;
       </DropdownToggle>
       <DropdownMenu>
-          <DropdownItem disabled={sort.username.order === null} onClick={() => unSortData('username')}>Un-sort</DropdownItem>
-        <DropdownItem disabled={sort.username.order === 'asc'} onClick={() => sortData('username', 'asc')}>sort by ASC</DropdownItem>
-        <DropdownItem disabled={sort.username.order === 'desc'} onClick={() => sortData('username', 'desc')}>sort by DESC</DropdownItem>
+        <DropdownItem
+          disabled={sort.username.order === null}
+          onClick={() => unSortData("username")}
+        >
+          Un-sort
+        </DropdownItem>
+        <DropdownItem
+          disabled={sort.username.order === "asc"}
+          onClick={() => sortData("username", "asc")}
+        >
+          sort by ASC
+        </DropdownItem>
+        <DropdownItem
+          disabled={sort.username.order === "desc"}
+          onClick={() => sortData("username", "desc")}
+        >
+          sort by DESC
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
